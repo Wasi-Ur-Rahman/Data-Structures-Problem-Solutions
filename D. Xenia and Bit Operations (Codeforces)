@@ -1,0 +1,75 @@
+// created by GRBs
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define int ll
+const int N = 2e5 + 9;
+int a[N];
+
+struct Segment_tree {
+  int t[N * 4];
+  Segment_tree() {
+    memset(t,0,sizeof t);
+  }
+  void build(int n,int b,int e,int par) {
+    if (b == e) {
+      t[n] = a[b];
+      return;
+    }
+    int mid = (b + e) >> 1;
+    int l = (n << 1),r = (l | 1);
+    build(l,b,mid,par^1);
+    build(r,mid + 1,e,par^1);
+    if (par)
+      t[n] = t[l] | t[r];
+    else t[n] = t[l] ^ t[r];
+  }
+  void update(int n,int b,int e,int i,int x,int par) {
+    if (b > i or e < i) return;
+    if (b == e and b == i) {
+      t[n] = x;
+      return;
+    }
+    int mid = (b + e) >> 1;
+    int l = (n << 1),r = (l | 1);
+    update(l,b,mid,i,x,par^1);
+    update(r,mid + 1,e,i,x,par^1);
+    if (par)
+      t[n] = t[l] | t[r];
+    else t[n] = t[l] ^ t[r];
+  }
+}obj;
+
+
+void solve() {
+  int n,q;
+  cin >> n >> q;
+
+  for (int i = 1;i <= (1 << n);i++)
+    cin >> a[i];
+
+  if (n % 2 == 0)
+    obj.build(1,1,(1 << n),0);
+  else obj.build(1,1,(1 << n),1);
+
+  while(q--) {
+    int p,b;
+    cin >> p >> b;
+    if (n & 1)
+      obj.update(1,1,(1 << n),p,b,1);
+    else obj.update(1,1,(1 << n),p,b,0);
+    cout << obj.t[1] << '\n';
+  }
+}
+
+int32_t main() { 
+  ios_base::sync_with_stdio(NULL);
+  cin.tie(NULL);
+  cout.tie(NULL);
+
+  // int tt,cases = 1;
+  // cin >> tt;
+  // while (tt--)
+    solve();
+  return 0;
+}
